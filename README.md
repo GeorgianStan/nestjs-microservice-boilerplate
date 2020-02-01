@@ -11,6 +11,7 @@
 Now is time to write your configuration for this project. Create two files: _.env.development_ and _.env.test_.
 
 **!** Both will be ignored with _.gitignore_
+
 **!** In production instead of these two, create a new file on your server named _.env.production_
 
 This is an example for _.env.development_
