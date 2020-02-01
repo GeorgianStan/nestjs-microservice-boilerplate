@@ -45,8 +45,8 @@ import { UserService } from './user.service';
 /**
  * * Filters
  */
-import { ValidationExceptionFilter } from '../expection-filters/validation-exception.filter';
-import { DBExceptionFilter } from '../expection-filters/db-exception.filter';
+import { ValidationExceptionFilter } from '../exception-filters/validation-exception.filter';
+import { DBExceptionFilter } from '../exception-filters/db-exception.filter';
 
 @Controller()
 export class UserController {
