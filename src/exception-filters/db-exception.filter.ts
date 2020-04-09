@@ -5,7 +5,7 @@
  * Created Date: Saturday, February 1st 2020, 1:24:51 pm
  * Author: Georgian Stan (georgian.stan8@gmail.com)
  * -----
- * Last Modified: Saturday, 1st February 2020 2:03:03 pm
+ * Last Modified: Thursday, 9th April 2020 10:25:19 pm
  * Modified By: Georgian Stan (georgian.stan8@gmail.com>)
  * ------------------------------------
  * Javascript will save your soul!
@@ -41,9 +41,6 @@ export class DBExceptionFilter implements ExceptionFilter {
         let message: string;
         if (exception.message.includes('email_1')) {
           message = 'This email is taken';
-        } else if (exception.message.includes('dbName_1')) {
-          // ! This error should never happen in production (bcs is the db name + random string + timestamp)
-          message = 'This db name is taken';
         }
 
         const res: CustomResponse = this.utils.buildErrorResponse(
