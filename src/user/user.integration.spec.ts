@@ -1,17 +1,4 @@
 /**
- * File: user.integration.spec.ts
- * Project: nest-microservice-boilerplate
- * Version:1.0.0
- * Created Date: Saturday, February 1st 2020, 1:24:51 pm
- * Author: Georgian Stan (georgian.stan8@gmail.com)
- * -----
- * Last Modified: Saturday, 1st February 2020 1:50:16 pm
- * Modified By: Georgian Stan (georgian.stan8@gmail.com>)
- * ------------------------------------
- * Javascript will save your soul!
- */
-
-/**
  * * Dependencies
  */
 import { Test, TestingModule } from '@nestjs/testing';
@@ -24,15 +11,17 @@ import bcrypt from 'bcryptjs';
  */
 import { User } from './entities/user.entity';
 import { CreateUserDto, GetUserDto } from './dto';
-import { CustomResponse } from '../core/interfaces/custom-res.interface';
-import { ResponseStatus } from '../core/enums/res-status.enum';
-import { ErrCodes } from '../core/enums/error-codes.enum';
+import {
+  CustomResponse,
+  ResponseStatus,
+  ErrCodes,
+} from 'src/core/custom-response/@types';
 
 /**
  * * Modules
  */
-import { UtilsModule } from '../utils/utils.module';
-import { DatabaseModule } from '../database/database.module';
+import { DatabaseModule } from 'src/core/database/database.module';
+import { CustomResponseModule } from 'src/core/custom-response/custom-response.module';
 
 /**
  * * Implementations
@@ -46,7 +35,11 @@ describe('User Module Integration', () => {
   // * connect to db
   beforeAll(async () => {
     const userModule: TestingModule = await Test.createTestingModule({
-      imports: [UtilsModule, DatabaseModule, TypeOrmModule.forFeature([User])],
+      imports: [
+        CustomResponseModule,
+        DatabaseModule,
+        TypeOrmModule.forFeature([User]),
+      ],
       providers: [UserService],
       controllers: [UserController],
     }).compile();
@@ -58,11 +51,7 @@ describe('User Module Integration', () => {
   afterAll(async () => {
     const connection = getConnection();
 
-    await connection
-      .createQueryBuilder()
-      .delete()
-      .from(User)
-      .execute();
+    await connection.createQueryBuilder().delete().from(User).execute();
 
     await connection.close();
   });
@@ -79,7 +68,7 @@ describe('User Module Integration', () => {
     it('Should create a new user', async () => {
       const startTime: number = Date.now();
 
-      const res: CustomResponse = await controller.createUser(payload);
+      const res: CustomResponse<User> = await controller.createUser(payload);
 
       const { data }: { data: User } = res;
       userFromDb = data;
@@ -143,12 +132,11 @@ describe('User Module Integration', () => {
 
     // * return no data when no user is found
     it('No user found when email is wrong', async () => {
-      const res: CustomResponse = await controller.getUser({
+      const res: CustomResponse<any> = await controller.getUser({
         email: 'nouser@email.com',
       });
 
       expect(res.status).toBe(ResponseStatus.SUCCESS);
-      expect(res.data).toBe('');
       expect(res.data).toBeFalsy();
       expect(res.error).toBeNull();
     });
@@ -157,13 +145,12 @@ describe('User Module Integration', () => {
     it('Change user pwd', async () => {
       const newPwd: string = 'new-pwd';
 
-      const res: CustomResponse = await controller.changePwd({
+      const res: CustomResponse<null> = await controller.changePwd({
         id: userFromDb.id,
         password: newPwd,
       });
 
       expect(res.status).toBe(ResponseStatus.SUCCESS);
-      expect(res.data).toBe('');
       expect(res.data).toBeFalsy();
       expect(res.error).toBeNull();
 
@@ -185,7 +172,7 @@ describe('User Module Integration', () => {
     it("Error response when no user is found to change it's pwd", async () => {
       const newPwd: string = 'new-pwd';
 
-      const res: CustomResponse = await controller.changePwd({
+      const res: CustomResponse<null> = await controller.changePwd({
         id: 'wrong-random-id-00',
         password: newPwd,
       });
@@ -200,13 +187,12 @@ describe('User Module Integration', () => {
     it('Update user data(personal info)', async () => {
       const newEmail: string = 'newEmail@email.com';
 
-      const res: CustomResponse = await controller.updateUserData({
+      const res: CustomResponse<null> = await controller.updateUserData({
         id: userFromDb.id,
         email: newEmail,
       });
 
       expect(res.status).toBe(ResponseStatus.SUCCESS);
-      expect(res.data).toBe('');
       expect(res.data).toBeFalsy();
       expect(res.error).toBeNull();
 
@@ -224,7 +210,7 @@ describe('User Module Integration', () => {
     it("Error response when no user is found to change it's data", async () => {
       const newEmail: string = 'newEmail@email.com';
 
-      const res: CustomResponse = await controller.updateUserData({
+      const res: CustomResponse<null> = await controller.updateUserData({
         id: userFromDb.id,
         email: newEmail,
       });
@@ -237,7 +223,7 @@ describe('User Module Integration', () => {
 
     // * Error response when no user is found to be deleted (wrong id)
     it('Error response when no user is found to be deleted - wrong id', async () => {
-      const res: CustomResponse = await controller.deleteUser({
+      const res: CustomResponse<null> = await controller.deleteUser({
         id: 'wrong-random-id-00',
         email: userFromDb.email,
       });
@@ -250,7 +236,7 @@ describe('User Module Integration', () => {
 
     // * Error response when no user is found to be deleted (wrong email)
     it('Error response when no user is found to be deleted - wrong email', async () => {
-      const res: CustomResponse = await controller.deleteUser({
+      const res: CustomResponse<null> = await controller.deleteUser({
         id: userFromDb.id,
         email: 'wrong email',
       });
@@ -263,25 +249,23 @@ describe('User Module Integration', () => {
 
     // * Delete user and check response
     it('Should delete an user when email + id matches', async () => {
-      const res: CustomResponse = await controller.deleteUser({
+      const res: CustomResponse<null> = await controller.deleteUser({
         id: userFromDb.id,
         email: userFromDb.email,
       });
 
       expect(res.status).toBe(ResponseStatus.SUCCESS);
-      expect(res.data).toBe('');
       expect(res.data).toBeFalsy();
       expect(res.error).toBeNull();
     });
 
     // * check if db is empty
     it('The user was deleted from db', async () => {
-      const res: CustomResponse = await controller.getUser({
+      const res: CustomResponse<User> = await controller.getUser({
         id: userFromDb.id,
       });
 
       expect(res.status).toBe(ResponseStatus.SUCCESS);
-      expect(res.data).toBe('');
       expect(res.data).toBeFalsy();
       expect(res.error).toBeNull();
     });

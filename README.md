@@ -1,3 +1,28 @@
+# Changelog
+
+## V2.0.0
+
+### Core
+
+- **upgrade** to latest **NestJS** version(v7)
+- folder structure update
+- use `cross-env` to set the `NODE_ENV` for cross OS support
+
+### Modules
+
+- refactor `utils` to simply `custom-response`
+- `CustomResponse` interface is a generic now
+- new custom-response status `WARNING = 'warning'`
+- `config.service` will use now `process.cwd()` istead of a relative path
+- `config.service` will return the values from `.env` files or from `process.env`
+- `database.module` will receive each entity inside the `entities` instead of `'dist/**/*.entity{.ts,.js}'`
+
+---
+
+### Explanation
+
+For a better understanding, check out this [article](https://itnext.io/nestjs-microservice-with-typeorm-mariadb-and-integration-e2e-testing-379338e99580).
+
 # Preparation
 
 - install the desired database, this example is made with **MariaDB** [link to a youtube tutorial](https://www.youtube.com/watch?v=hDKnsUrz0nM&t=195s)

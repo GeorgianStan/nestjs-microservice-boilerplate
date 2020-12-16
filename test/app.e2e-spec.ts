@@ -1,17 +1,4 @@
 /**
- * File: app.e2e-spec.ts
- * Project: nest-microservice-boilerplate
- * Version:1.0.0
- * Created Date: Saturday, February 1st 2020, 1:24:51 pm
- * Author: Georgian Stan (georgian.stan8@gmail.com)
- * -----
- * Last Modified: Saturday, 1st February 2020 1:52:16 pm
- * Modified By: Georgian Stan (georgian.stan8@gmail.com>)
- * ------------------------------------
- * Javascript will save your soul!
- */
-
-/**
  * * Dependencies
  */
 import { INestApplication } from '@nestjs/common';
@@ -33,10 +20,12 @@ import { UserController } from '../src/user/user.controller';
  * * Types
  */
 import { CreateUserDto } from '../src/user/dto';
-import { CustomResponse } from '../src/core/interfaces/custom-res.interface';
 import { User } from '../src/user/entities/user.entity';
-import { ResponseStatus } from '../src/core/enums/res-status.enum';
-import { ErrCodes } from '../src/core/enums/error-codes.enum';
+import {
+  CustomResponse,
+  ResponseStatus,
+  ErrCodes,
+} from '../src/core/custom-response/@types';
 
 describe('User Microservice', () => {
   let app: INestApplication;
@@ -76,11 +65,7 @@ describe('User Microservice', () => {
   afterAll(async () => {
     const connection = getConnection();
 
-    await connection
-      .createQueryBuilder()
-      .delete()
-      .from(User)
-      .execute();
+    await connection.createQueryBuilder().delete().from(User).execute();
 
     await app.close();
     client.close();
@@ -99,8 +84,10 @@ describe('User Microservice', () => {
 
     // * Validation -> no email
     it('Validaiton works when no email is present', async () => {
-      const res: CustomResponse = await client
-        .send<CustomResponse>('create_user', { password: payload.password })
+      const res: CustomResponse<any> = await client
+        .send<CustomResponse<any>>('create_user', {
+          password: payload.password,
+        })
         .toPromise();
 
       expect(res.status).toBe(ResponseStatus.ERROR);
@@ -110,8 +97,8 @@ describe('User Microservice', () => {
 
     // * Validation -> wrong email format
     it('Validaiton works when a wrong email format is present', async () => {
-      const res: CustomResponse = await client
-        .send<CustomResponse>('create_user', {
+      const res: CustomResponse<any> = await client
+        .send<CustomResponse<any>>('create_user', {
           email: 'wrong-email-format',
           password: payload.password,
         })
@@ -124,8 +111,8 @@ describe('User Microservice', () => {
 
     // * Validation -> no password
     it('Validaiton works when no password is present', async () => {
-      const res: CustomResponse = await client
-        .send<CustomResponse>('create_user', {
+      const res: CustomResponse<any> = await client
+        .send<CustomResponse<any>>('create_user', {
           email: payload.email,
         })
         .toPromise();
@@ -137,8 +124,8 @@ describe('User Microservice', () => {
 
     // * Create user
     it('Create user', async () => {
-      const res: CustomResponse = await client
-        .send<CustomResponse>('create_user', payload)
+      const res: CustomResponse<any> = await client
+        .send<CustomResponse<any>>('create_user', payload)
         .toPromise();
 
       const { data }: { data: User } = res;
@@ -151,8 +138,8 @@ describe('User Microservice', () => {
 
     // * Response error when a new user with the same email
     it('Response error when a user with the same email already exits', async () => {
-      const res: CustomResponse = await client
-        .send<CustomResponse>('create_user', payload)
+      const res: CustomResponse<any> = await client
+        .send<CustomResponse<any>>('create_user', payload)
         .toPromise();
 
       expect(res.status).toBe(ResponseStatus.ERROR);
@@ -162,8 +149,11 @@ describe('User Microservice', () => {
 
     // * Create a user with extra properties
     it('Should remove all the extra properties from createUserDto payload', async () => {
-      const res: CustomResponse = await client
-        .send<CustomResponse>('create_user', { ...secondPayload, admin: true })
+      const res: CustomResponse<any> = await client
+        .send<CustomResponse<any>>('create_user', {
+          ...secondPayload,
+          admin: true,
+        })
         .toPromise();
 
       const { data }: { data: User } = res;
@@ -178,8 +168,10 @@ describe('User Microservice', () => {
 
     // * Prevent - Get a user with extra properties
     it('Prevent getting a user using extra properties', async () => {
-      const res: CustomResponse = await client
-        .send<CustomResponse>('get_user', { createdAt: userFromDb.createdAt })
+      const res: CustomResponse<any> = await client
+        .send<CustomResponse<any>>('get_user', {
+          createdAt: userFromDb.createdAt,
+        })
         .toPromise();
 
       expect(res.status).toBe(ResponseStatus.ERROR);
@@ -191,8 +183,8 @@ describe('User Microservice', () => {
     it('Should remove all the extra properties from UpdateUserDataDto', async () => {
       const newEmail: string = 'new-email@email.com';
 
-      const res: CustomResponse = await client
-        .send<CustomResponse>('update_user_data', {
+      const res: CustomResponse<any> = await client
+        .send<CustomResponse<any>>('update_user_data', {
           email: newEmail,
           id: userFromDb.id,
           admin: true,

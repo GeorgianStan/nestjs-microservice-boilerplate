@@ -1,17 +1,4 @@
 /**
- * File: user.controller.ts
- * Project: nest-microservice-boilerplate
- * Version:1.0.0
- * Created Date: Saturday, February 1st 2020, 1:24:51 pm
- * Author: Georgian Stan (georgian.stan8@gmail.com)
- * -----
- * Last Modified: Saturday, 1st February 2020 1:50:21 pm
- * Modified By: Georgian Stan (georgian.stan8@gmail.com>)
- * ------------------------------------
- * Javascript will save your soul!
- */
-
-/**
  * * Dependencies
  */
 import {
@@ -32,27 +19,30 @@ import {
   ChangePwdDto,
   UpdateUserDataDto,
 } from './dto';
-import { User } from './entities/user.entity';
-import { CustomResponse } from '../core/interfaces/custom-res.interface';
-import { ErrCodes } from '../core/enums/error-codes.enum';
+import { CustomResponse, ErrCodes } from 'src/core/custom-response/@types';
 
 /**
- * * Implementations
+ * * Entity
  */
-import { UtilsService } from '../utils/utils.service';
+import { User } from './entities/user.entity';
+
+/**
+ * * Services
+ */
 import { UserService } from './user.service';
+import { CustomResponseService } from 'src/core/custom-response/custom-response.service';
 
 /**
  * * Filters
  */
-import { ValidationExceptionFilter } from '../exception-filters/validation-exception.filter';
-import { DBExceptionFilter } from '../exception-filters/db-exception.filter';
+import { ValidationExceptionFilter } from '../common/exception-filters/validation-exception.filter';
+import { DBExceptionFilter } from '../common/exception-filters/db-exception.filter';
 
 @Controller()
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly utilsService: UtilsService,
+    private readonly customResponseService: CustomResponseService,
   ) {}
 
   // * create a new user
@@ -62,7 +52,7 @@ export class UserController {
   async createUser(@Payload() payload: CreateUserDto) {
     const userFromDb: User = await this.userService.createUser(payload);
 
-    const res: CustomResponse = this.utilsService.buildSuccessResponse(
+    const res: CustomResponse<User> = this.customResponseService.buildSuccessResponse(
       userFromDb,
     );
 
@@ -75,18 +65,20 @@ export class UserController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async getUser(@Payload() payload: GetUserDto) {
     if (!Object.keys(payload).length) {
-      const res: CustomResponse = this.utilsService.buildErrorResponse(
+      const res: CustomResponse<null> = this.customResponseService.buildErrorResponse(
         ErrCodes.BAD_PARAMETERS,
         'You must send at lest one search parameter',
       );
       return res;
     }
 
-    const userFromDb: User = await this.userService.getUser(payload);
-
-    const res: CustomResponse = this.utilsService.buildSuccessResponse(
-      userFromDb || '',
+    const userFromDb: User | undefined = await this.userService.getUser(
+      payload,
     );
+
+    const res: CustomResponse<
+      User | undefined
+    > = this.customResponseService.buildSuccessResponse(userFromDb);
 
     return res;
   }
@@ -97,12 +89,12 @@ export class UserController {
   @UsePipes(ValidationPipe)
   async changePwd(@Payload() payload: ChangePwdDto) {
     const updated: boolean = await this.userService.changePwd(payload);
-    let res: CustomResponse;
+    let res: CustomResponse<null>;
 
     if (updated) {
-      res = this.utilsService.buildSuccessResponse('');
+      res = this.customResponseService.buildSuccessResponse();
     } else {
-      res = this.utilsService.buildErrorResponse(
+      res = this.customResponseService.buildErrorResponse(
         ErrCodes.BAD_PARAMETERS,
         'No user found to update',
       );
@@ -117,12 +109,12 @@ export class UserController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async updateUserData(@Payload() payload: UpdateUserDataDto) {
     const updated: boolean = await this.userService.updateUserData(payload);
-    let res: CustomResponse;
+    let res: CustomResponse<null>;
 
     if (updated) {
-      res = this.utilsService.buildSuccessResponse('');
+      res = this.customResponseService.buildSuccessResponse();
     } else {
-      res = this.utilsService.buildErrorResponse(
+      res = this.customResponseService.buildErrorResponse(
         ErrCodes.BAD_PARAMETERS,
         'No user found to update',
       );
@@ -138,12 +130,12 @@ export class UserController {
   async deleteUser(@Payload() payload: DeleteUserDto) {
     const deleted: boolean = await this.userService.deleteUser(payload);
 
-    let res: CustomResponse;
+    let res: CustomResponse<null>;
 
     if (deleted) {
-      res = this.utilsService.buildSuccessResponse('');
+      res = this.customResponseService.buildSuccessResponse();
     } else {
-      res = this.utilsService.buildErrorResponse(
+      res = this.customResponseService.buildErrorResponse(
         ErrCodes.BAD_PARAMETERS,
         'No user found to delete',
       );

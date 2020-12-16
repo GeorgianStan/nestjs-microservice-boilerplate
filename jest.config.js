@@ -7,4 +7,7 @@ module.exports = {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   transformIgnorePatterns: ['^.+\\.js$'],
+  moduleNameMapper: {
+    'src(.*)$': '<rootDir>/src$1',
+  },
 };

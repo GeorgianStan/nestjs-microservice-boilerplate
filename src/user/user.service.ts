@@ -1,17 +1,4 @@
 /**
- * File: user.service.ts
- * Project: nest-microservice-boilerplate
- * Version:1.0.0
- * Created Date: Saturday, February 1st 2020, 1:24:51 pm
- * Author: Georgian Stan (georgian.stan8@gmail.com)
- * -----
- * Last Modified: Saturday, 1st February 2020 2:01:20 pm
- * Modified By: Georgian Stan (georgian.stan8@gmail.com>)
- * ------------------------------------
- * Javascript will save your soul!
- */
-
-/**
  * * Dependencies
  */
 import { Injectable } from '@nestjs/common';
@@ -39,7 +26,7 @@ export class UserService {
   ) {}
 
   // * create a new user in db
-  async createUser(payload: CreateUserDto) {
+  async createUser(payload: CreateUserDto): Promise<User> {
     // * hash pwd
     const password: string = await bcrypt.hash(payload.password, 10);
 
@@ -54,7 +41,7 @@ export class UserService {
   }
 
   // * get one user
-  async getUser(payload: GetUserDto): Promise<User> {
+  async getUser(payload: GetUserDto): Promise<User | undefined> {
     let user: User;
     if (payload.id) {
       user = await this.userRepository.findOne(payload.id);
@@ -66,7 +53,7 @@ export class UserService {
   }
 
   // * change user pwd
-  async changePwd(payload: ChangePwdDto) {
+  async changePwd(payload: ChangePwdDto): Promise<boolean> {
     const password: string = await bcrypt.hash(payload.password, 10);
 
     const res: UpdateResult = await this.userRepository.update(payload.id, {
@@ -75,7 +62,7 @@ export class UserService {
 
     let updated: boolean = false;
 
-    if (res.raw.changedRows || res.affected) {
+    if (res.raw.changedRows) {
       updated = true;
     }
 
@@ -83,7 +70,7 @@ export class UserService {
   }
 
   // * update  user data
-  async updateUserData(payload: UpdateUserDataDto) {
+  async updateUserData(payload: UpdateUserDataDto): Promise<boolean> {
     const { id, ...noId } = payload;
 
     const res: UpdateResult = await this.userRepository.update(payload.id, {
@@ -92,7 +79,7 @@ export class UserService {
 
     let updated: boolean = false;
 
-    if (res.raw.changedRows || res.affected) {
+    if (res.raw.changedRows) {
       updated = true;
     }
 

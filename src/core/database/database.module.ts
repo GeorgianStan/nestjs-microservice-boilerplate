@@ -1,20 +1,23 @@
 /**
- * File: database.module.ts
- * Project: nest-microservice-boilerplate
- * Version:1.0.0
- * Created Date: Saturday, February 1st 2020, 1:24:51 pm
- * Author: Georgian Stan (georgian.stan8@gmail.com)
- * -----
- * Last Modified: Saturday, 1st February 2020 1:51:33 pm
- * Modified By: Georgian Stan (georgian.stan8@gmail.com>)
- * ------------------------------------
- * Javascript will save your soul!
+ * * Dependencies
  */
-
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '../config/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+/**
+ * * Modules
+ */
+import { ConfigModule } from '../config/config.module';
+
+/**
+ * * Services
+ */
 import { ConfigService } from '../config/config.service';
+
+/**
+ * * Entities
+ */
+import { User } from 'src/user/entities/user.entity';
 
 @Module({
   imports: [
@@ -28,7 +31,7 @@ import { ConfigService } from '../config/config.service';
         username: configService.get('DB_SERVER_USERNAME'),
         password: configService.get('DB_SERVER_PASSWORD'),
         database: configService.get('DATABASE'),
-        entities: ['dist/**/*.entity{.ts,.js}'],
+        entities: [User],
         // ! ALWAYS FALSE IN PROD
         synchronize: !(process.env.NODE_ENV.trim() === 'production'),
       }),
