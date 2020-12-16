@@ -1,6 +1,12 @@
 # Changelog
 
-## V2.0.0
+### v2.1.0
+
+- sample `.env` file to indicate required environment variables
+- switch to truly private variables, instead of TypeScript modifiers
+- `CustomResponse` interface includes the `namespace` now
+
+## v2.0.0
 
 ### Core
 

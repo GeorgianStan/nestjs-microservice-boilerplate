@@ -6,6 +6,7 @@ import { Injectable, Logger } from '@nestjs/common';
 /**
  * * Services
  */
+import { ConfigService } from '../config/config.service';
 
 /**
  * * Types
@@ -15,10 +16,10 @@ import { ResponseStatus } from './@types/enums';
 
 @Injectable()
 export class CustomResponseService {
-  private readonly logger = new Logger(CustomResponseService.name);
+  #logger = new Logger(CustomResponseService.name);
 
-  constructor() {
-    this.logger.log('Service Init');
+  constructor(private readonly configService:ConfigService) {
+    this.#logger.log('Service Init');
   }
 
   // * build err res
@@ -33,6 +34,7 @@ export class CustomResponseService {
         code,
         msg,
       },
+      namespace: this.configService.get('ERROR_CODE_NAMESPACE'),
     };
   }
 
@@ -48,6 +50,7 @@ export class CustomResponseService {
         code,
         msg,
       },
+      namespace: this.configService.get('ERROR_CODE_NAMESPACE'),
     };
   }
 
@@ -57,6 +60,7 @@ export class CustomResponseService {
       status: ResponseStatus.SUCCESS,
       data,
       error: null,
+      namespace: this.configService.get('ERROR_CODE_NAMESPACE'),
     };
   }
 }

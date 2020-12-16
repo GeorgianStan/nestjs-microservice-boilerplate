@@ -8,33 +8,33 @@ import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class ConfigService {
-  private readonly logger = new Logger(ConfigService.name);
 
-  private envPath: any;
-  private readonly nodeEnv: string = process.env.NODE_ENV
+  #envPath: any;
+  #nodeEnv: string = process.env.NODE_ENV
     ? process.env.NODE_ENV.trim()
     : undefined;
 
-  private readonly envConfig: { [key: string]: string };
+  #envConfig: { [key: string]: string };
+
   constructor() {
-    switch (this.nodeEnv) {
+    switch (this.#nodeEnv) {
       case 'test':
-        this.envPath = resolve(process.cwd(), '.env.test');
+        this.#envPath = resolve(process.cwd(), '.env.test');
         break;
       case 'production':
-        this.envPath = resolve(process.cwd(), '.env.production');
+        this.#envPath = resolve(process.cwd(), '.env.production');
         break;
       case 'development':
-        this.envPath = resolve(process.cwd(), '.env.development');
+        this.#envPath = resolve(process.cwd(), '.env.development');
         break;
       default:
         throw new Error('Specify the NODE_ENV variable');
     }
 
-    this.envConfig = dotenv.parse(fs.readFileSync(this.envPath));
+    this.#envConfig = dotenv.parse(fs.readFileSync(this.#envPath));
   }
 
   get(key: string): string {
-    return this.envConfig[key] || process.env[key];
+    return this.#envConfig[key] || process.env[key];
   }
 }

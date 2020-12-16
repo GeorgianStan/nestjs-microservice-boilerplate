@@ -2,6 +2,7 @@
  * * Dependencies
  */
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '../config/config.module';
 
 /**
  * * Implementations
@@ -9,7 +10,7 @@ import { Module } from '@nestjs/common';
 import { CustomResponseService } from './custom-response.service';
 
 @Module({
-  imports: [],
+  imports: [ConfigModule],
   providers: [CustomResponseService],
   exports: [CustomResponseService],
 })

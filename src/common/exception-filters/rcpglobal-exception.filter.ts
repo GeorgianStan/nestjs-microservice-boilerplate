@@ -16,14 +16,14 @@ import { CustomResponse, ErrCodes } from 'src/core/custom-response/@types';
 
 @Catch()
 export class RcpGlobalErrorFilter extends BaseRpcExceptionFilter {
-  private readonly logger = new Logger(RcpGlobalErrorFilter.name);
+  #logger = new Logger(RcpGlobalErrorFilter.name);
 
   constructor(private readonly customResponseService: CustomResponseService) {
     super();
   }
 
   catch(exception: any, host: ArgumentsHost) {
-    this.logger.error(exception);
+    this.#logger.error(exception);
     switch (exception.name) {
       default: {
         const res: CustomResponse<null> = this.customResponseService.buildErrorResponse(

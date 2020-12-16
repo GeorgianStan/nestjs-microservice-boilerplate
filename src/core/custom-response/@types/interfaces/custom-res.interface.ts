@@ -10,4 +10,5 @@ export interface CustomResponse<T> {
   status: ResponseStatus;
   data: T;
   error: CustomError;
+  namespace: string;
 }
